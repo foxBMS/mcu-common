@@ -100,6 +100,7 @@ ILCK_ELECTRICAL_STATE_TYPE_s ILCK_GetInterlockFeedback(void) {
     } else if (IO_PIN_RESET == pinstate) {
         measuredInterlockState = ILCK_SWITCH_OFF;
     }
+    ilck_interlock_state.feedback = measuredInterlockState;
     return measuredInterlockState;
 }
 
