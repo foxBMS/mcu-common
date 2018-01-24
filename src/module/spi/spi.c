@@ -50,6 +50,16 @@
 /*================== Macros and Definitions ===============================*/
 
 /*================== Constant and Variable Definitions ====================*/
+
+/**
+ * contains variables used by the SPI driver
+ *
+ */
+static SPI_STATE_s spi_state = {
+    .transmit_ongoing       = FALSE,
+    .counter                = 0,
+};
+
 const uint8_t spi_cmdDummy[1]={0x00};
 
 /*================== Function Prototypes ==================================*/
@@ -113,6 +123,7 @@ void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi) {
     if (hspi  ==  &spi_devices[0])        // Iso-SPI Main
     {
         SPI_UnsetCS(1);
+        spi_state.transmit_ongoing = FALSE;
     }
     if (hspi  ==  &spi_devices[1])        // Eeprom
     {
@@ -129,6 +140,7 @@ void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi)
     if (hspi  ==  &spi_devices[0])        // Iso-SPI Main
     {
         SPI_UnsetCS(1);
+        spi_state.transmit_ongoing = FALSE;
     }
 
     if (hspi  ==  &spi_devices[1])        // Eeprom
@@ -274,6 +286,20 @@ STD_RETURN_TYPE_e SPI_TransmitReceive(SPI_HandleTypeDef *hspi, uint8_t *pTxData,
         retVal = E_NOT_OK;
 
     return retVal;
+
+}
+
+extern STD_RETURN_TYPE_e SPI_IsTransmitOngoing(void) {
+    STD_RETURN_TYPE_e retval = FALSE;
+
+    retval    =  spi_state.transmit_ongoing;
+
+    return (retval);
+}
+
+extern void SPI_SetTransmitOngoing(void) {
+
+    spi_state.transmit_ongoing = TRUE;
 
 }
 

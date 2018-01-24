@@ -42,19 +42,58 @@
 /*================== Constant and Variable Definitions ====================*/
 
 /*================== Function Prototypes ==================================*/
-extern uint8_t MEAS_IsFirstMeasurementCycleFinished(void);
 
-/**
- * @brief   makes the requests to the LTC state machine.
- *
- * This function determines how the measurement cycle is made by the LTCs, by using the adequate state requests.
- *
- * @param   LTC_Todo       what kind of task the daisy-chain should do, taken from LTC_TASK_TYPE_e
- *
- * @return  result of the state request that was made, taken from LTC_RETURN_TYPE_e
- */
 extern void MEAS_Ctrl(void);
 
+/**
+ * @brief   Checks if the first LTC measurement cycle was made
+ *
+ * @return  TURE is the first measurement cycle was made, FALSE otherwise
+ *
+ */
+extern STD_RETURN_TYPE_e MEAS_IsFirstMeasurementCycleFinished(void);
+
+/**
+ * @brief   Makes the initialization request to the LTC state machine
+ *
+ */
+extern STD_RETURN_TYPE_e MEAS_StartMeasurement(void);
+
+/**
+ * @brief   Makes the request to the LTC state machine to write to the IO port-expander
+ *
+ */
+extern uint8_t MEAS_Request_IO_Write(void);
+
+/**
+ * @brief   Makes the request to the LTC state machine to read from the IO port-expander
+ *
+ */
+extern uint8_t MEAS_Request_IO_Read(void);
+
+/**
+ * @brief   Makes the request to the LTC state machine to read from the external temperature sensor on slaves
+ *
+ */
+extern uint8_t MEAS_Request_Temperature_Read(void);
+
+/**
+ * @brief   Makes the request to the LTC state machine to read balancing feedback from the slaves
+ *
+ */
+extern uint8_t MEAS_Request_BalancingFeedback_Read(void);
+
+/**
+ * @brief   Makes the request to the LTC state machine to read from the external EEPROM on slaves
+ *
+ */
+extern uint8_t MEAS_Request_EEPROM_Read(void);
+
+/**
+ * @brief   Makes the request to the LTC state machine to write to the external EEPROM on slaves
+ *
+ */
+extern uint8_t MEAS_Request_EEPROM_Write(void);
 
 /*================== Function Implementations =============================*/
 

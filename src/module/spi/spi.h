@@ -40,6 +40,15 @@
 
 /*================== Macros and Definitions ===============================*/
 
+/**
+ * This structure contains variables relevant for the SPI driver.
+ *
+ */
+typedef struct {
+    uint8_t transmit_ongoing;               /*!< time in ms before the state machine processes the next state, e.g. in counts of 1ms    */
+    uint8_t counter;                        /*!< general purpose counter */
+} SPI_STATE_s;
+
 /*================== Constant and Variable Definitions ====================*/
 
 /*================== Function Prototypes ==================================*/
@@ -118,6 +127,25 @@ extern void SPI_SetCS(uint8_t busID);
  * @return none(void)
  */
 extern void SPI_UnsetCS(uint8_t busID);
+
+
+/**
+ * @brief   gets the SPI transmit status.
+ *
+ * @return  retval  TRUE if transmission still ongoing, FALSE otherwise
+ *
+ */
+extern STD_RETURN_TYPE_e SPI_IsTransmitOngoing(void);
+
+
+/**
+ * @brief   sets the SPI transmit status.
+ *
+ */
+extern void SPI_SetTransmitOngoing(void);
+
+
+
 /*================== Function Implementations =============================*/
 
 

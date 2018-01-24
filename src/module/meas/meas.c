@@ -40,147 +40,88 @@
 /*================== Macros and Definitions ===============================*/
 
 /*================== Constant and Variable Definitions ====================*/
-static uint32_t ltc_task_1ms_cnt = 0;
-static uint8_t ltc_taskcycle = 0;
-
 
 
 /*================== Function Prototypes ==================================*/
-extern uint8_t MEAS_IsFirstMeasurementCycleFinished(void);
-
 
 /*================== Function Implementations =============================*/
 
 
 void MEAS_Ctrl(void)
 {
-    LTC_STATEMACH_e ltcstate = LTC_STATEMACH_UNDEFINED;
 
-    LTC_TASK_TYPE_e LTC_Todo = LTC_HAS_TO_MEASURE;
-
-    ltc_task_1ms_cnt++;
-
-    if(LTC_GetStateRequest() == LTC_STATE_NO_REQUEST)
-    {
-        ltcstate = LTC_GetState();
-
-        if(LTC_Todo == LTC_HAS_TO_MEASURE)
-        {
-            if(ltcstate == LTC_STATEMACH_UNINITIALIZED)
-            {
-                /* set initialization request*/
-                LTC_SetStateRequest(LTC_STATE_INIT_REQUEST, LTC_ADCMODE_UNDEFINED, LTC_ADCMEAS_UNDEFINED, LTC_NUMBER_OF_MUX_MEASUREMENTS_PER_CYCLE);
-                ltc_taskcycle=1;
-            }
-            else if(ltcstate == LTC_STATEMACH_IDLE)
-            {
-                /* set state requests for starting measurement cycles if LTC is in IDLE state*/
-                ++ltc_taskcycle;
-
-                switch(ltc_taskcycle)
-                {
-                case 2:
-                    LTC_SetStateRequest(LTC_STATE_VOLTAGEMEASUREMENT_REQUEST,LTC_VOLTAGE_MEASUREMENT_MODE,LTC_ADCMEAS_ALLCHANNEL, LTC_NUMBER_OF_MUX_MEASUREMENTS_PER_CYCLE);
-                    break;
-
-                case 3:
-                    LTC_SetStateRequest(LTC_STATE_READVOLTAGE_REQUEST,LTC_VOLTAGE_MEASUREMENT_MODE,LTC_ADCMEAS_ALLCHANNEL, LTC_NUMBER_OF_MUX_MEASUREMENTS_PER_CYCLE);
-                    break;
-
-                case 4:
-                    LTC_SaveVoltages();
-                    LTC_SetStateRequest(LTC_STATE_BALANCECONTROL_REQUEST,LTC_VOLTAGE_MEASUREMENT_MODE,LTC_ADCMEAS_ALLCHANNEL, LTC_NUMBER_OF_MUX_MEASUREMENTS_PER_CYCLE);
-                    break;
-
-                case 5:
-                    LTC_SetStateRequest(LTC_STATE_MUXMEASUREMENT_REQUEST,LTC_GPIO_MEASUREMENT_MODE,LTC_ADCMEAS_SINGLECHANNEL_GPIO1, LTC_NUMBER_OF_MUX_MEASUREMENTS_PER_CYCLE);
-                    break;
-
-                case 6:
-                    if (LTC_GetMuxSequenceState() == E_OK) {
-                        LTC_SaveTemperatures();
-                    }
-                    LTC_SetStateRequest(LTC_STATE_USER_IO_REQUEST,LTC_ADCMODE_NORMAL_DCP0,LTC_ADCMEAS_ALLCHANNEL, LTC_NUMBER_OF_MUX_MEASUREMENTS_PER_CYCLE);
-                    break;
-
-                case 7:
-                    LTC_SetStateRequest(LTC_STATE_EEPROM_READ_UID_REQUEST,LTC_ADCMODE_NORMAL_DCP0,LTC_ADCMEAS_ALLCHANNEL, LTC_NUMBER_OF_MUX_MEASUREMENTS_PER_CYCLE);
-                    break;
-
-                case 8:
-                    LTC_SetStateRequest(LTC_STATE_TEMP_SENS_READ_REQUEST,LTC_ADCMODE_NORMAL_DCP0,LTC_ADCMEAS_ALLCHANNEL, LTC_NUMBER_OF_MUX_MEASUREMENTS_PER_CYCLE);
-                    break;
-
-                case 9:
-                    LTC_SetStateRequest(LTC_STATE_ALLGPIOMEASUREMENT_REQUEST,LTC_ADCMODE_NORMAL_DCP0,LTC_ADCMEAS_ALLCHANNEL, LTC_NUMBER_OF_MUX_MEASUREMENTS_PER_CYCLE);
-                    break;
-
-                case 10:
-                    LTC_SaveAllGPIOs();
-                    ltc_taskcycle = 1;            // Restart measurement cycle
-                    LTC_SetFirstMeasurementCycleFinished(); //set first measurement finished flag
-                    break;
-
-                default:
-                    ltc_taskcycle = 1;
-                    break;
-                }
-            }
-        }
-
-        else if(LTC_Todo == LTC_HAS_TO_REINIT)
-        {
-            if(ltcstate != LTC_STATEMACH_INITIALIZATION || ltcstate != LTC_STATEMACH_INITIALIZED)
-            {
-                ltc_taskcycle=1;
-                LTC_SetStateRequest(LTC_STATE_REINIT_REQUEST,LTC_ADCMODE_UNDEFINED, LTC_ADCMEAS_UNDEFINED, LTC_NUMBER_OF_MUX_MEASUREMENTS_PER_CYCLE);
-            }
-        }
-
-        else if(LTC_Todo == LTC_HAS_TO_MEASURE_2CELLS)
-        {
-            if(ltcstate == LTC_STATEMACH_UNINITIALIZED)
-                {
-                    /* set initialization request */
-                    LTC_SetStateRequest(LTC_STATE_INIT_REQUEST, LTC_ADCMODE_FAST_DCP0, LTC_ADCMEAS_SINGLECHANNEL_TWOCELLS, LTC_NUMBER_OF_MUX_MEASUREMENTS_PER_CYCLE);
-                    ltc_taskcycle=1;
-                }
-            else if(ltcstate == LTC_STATEMACH_IDLE)
-            {
-                /* set state requests for starting measurement cycles if LTC is in IDLE state */
-
-                ++ltc_taskcycle;
-
-                switch(ltc_taskcycle)
-                {
-
-                case 2:
-                    LTC_SetStateRequest(LTC_STATE_VOLTAGEMEASUREMENT_2CELLS_REQUEST,LTC_ADCMODE_FAST_DCP0,LTC_ADCMEAS_SINGLECHANNEL_TWOCELLS, LTC_NUMBER_OF_MUX_MEASUREMENTS_PER_CYCLE);
-                    break;
-
-                case 3:
-                    LTC_SetStateRequest(LTC_STATE_READVOLTAGE_2CELLS_REQUEST,LTC_ADCMODE_FAST_DCP0,LTC_ADCMEAS_SINGLECHANNEL_TWOCELLS, LTC_NUMBER_OF_MUX_MEASUREMENTS_PER_CYCLE);
-                    break;
-
-
-                case 4:
-                    LTC_SaveVoltages();
-                    // retVal = LTC_SetStateRequest(LTC_STATE_MUXMEASUREMENT_REQUEST,LTC_GPIO_MEASUREMENT_MODE,LTC_ADCMEAS_SINGLECHANNEL, LTC_NUMBER_OF_MUX_MEASUREMENTS_PER_CYCLE);
-                    ltc_taskcycle=1;            // Restart measurement cycle
-                    break;
-
-                default:
-                    ltc_taskcycle=1;
-                    break;
-                }
-            }
-        }
-    }
 }
 
 
+extern uint8_t MEAS_Request_IO_Write(void){
 
-extern uint8_t MEAS_IsFirstMeasurementCycleFinished(void){
+    STD_RETURN_TYPE_e retval = E_NOT_OK;
+
+    if (LTC_SetStateRequest(LTC_STATE_USER_IO_WRITE_REQUEST) == LTC_OK) {
+        retval = E_OK;
+    }
+
+    return (retval);
+}
+
+extern uint8_t MEAS_Request_IO_Read(void){
+
+    STD_RETURN_TYPE_e retval = E_NOT_OK;
+
+    if (LTC_SetStateRequest(LTC_STATE_USER_IO_READ_REQUEST) == LTC_OK) {
+        retval = E_OK;
+    }
+
+    return (retval);
+}
+
+extern uint8_t MEAS_Request_Temperature_Read(void){
+
+    STD_RETURN_TYPE_e retval = E_NOT_OK;
+
+    if (LTC_SetStateRequest(LTC_STATE_TEMP_SENS_READ_REQUEST) == LTC_OK) {
+        retval = E_OK;
+    }
+
+    return (retval);
+}
+
+extern uint8_t MEAS_Request_BalancingFeedback_Read(void){
+
+    STD_RETURN_TYPE_e retval = E_NOT_OK;
+
+    if (LTC_SetStateRequest(LTC_STATE_BALANCEFEEDBACK_REQUEST) == LTC_OK) {
+        retval = E_OK;
+    }
+
+    return (retval);
+}
+
+
+extern uint8_t MEAS_Request_EEPROM_Read(void){
+
+    STD_RETURN_TYPE_e retval = E_NOT_OK;
+
+    if (LTC_SetStateRequest(LTC_STATE_EEPROM_READ_REQUEST) == LTC_OK) {
+        retval = E_OK;
+    }
+
+    return (retval);
+}
+
+extern uint8_t MEAS_Request_EEPROM_Write(void){
+
+    STD_RETURN_TYPE_e retval = E_NOT_OK;
+
+    if (LTC_SetStateRequest(LTC_STATE_EEPROM_WRITE_REQUEST) == LTC_OK) {
+        retval = E_OK;
+    }
+
+    return (retval);
+}
+
+
+extern STD_RETURN_TYPE_e MEAS_IsFirstMeasurementCycleFinished(void){
 
     uint8_t retval = FALSE;
 
@@ -188,3 +129,16 @@ extern uint8_t MEAS_IsFirstMeasurementCycleFinished(void){
 
     return (retval);
 }
+
+
+extern STD_RETURN_TYPE_e MEAS_StartMeasurement(void){
+
+    STD_RETURN_TYPE_e retval = E_NOT_OK;
+
+    if (LTC_SetStateRequest(LTC_STATE_INIT_REQUEST) == LTC_OK) {
+        retval = E_OK;
+    }
+
+    return retval;
+}
+
