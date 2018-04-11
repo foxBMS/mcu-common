@@ -1,5 +1,17 @@
 # foxBMS-common-drivers Change Log
 
+
+
+## Release 1.0.2
+
+- There was an error in the LTC module when less than 12 battery cells per module were used. An overflow occurred 
+in function LTC_SaveRXtoVoltagebuffer() and invalid cell voltages were saved in the database.
+-mcu-common/src/module/ltc.c: fixed function LTC_SetMUXChCommand()
+-mcu-common/src/module/ltc.c: redesigned structure for automatic measurement and 50Hz voltage measurement
+-mcu-common/src/module/ltc.c: LTC driver now uses interrupts
+-mcu-common/src/module/ltc.c: implemented/improved access to slave features (IO port-expander, external temperature sensor, EEPROM)
+
+
 ## Release 1.0.0
 
 Initial release of this repository containing drivers that are shared across

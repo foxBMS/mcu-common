@@ -47,11 +47,11 @@
 #endif
 
 typedef struct {
-    int LTC[LTC_NUMBER_OF_LTC_PER_MODULE];  /*!<    */
-    int mux0;                               /*!<    */
-    int mux1;                               /*!<    */
-    int mux2;                               /*!<    */
-    int mux3;                               /*!<    */
+    uint8_t LTC;  /*!<    */
+    uint8_t mux0;                               /*!<    */
+    uint8_t mux1;                               /*!<    */
+    uint8_t mux2;                               /*!<    */
+    uint8_t mux3;                               /*!<    */
 } LTC_ERRORTABLE_s;
 
 /*================== Constant and Variable Definitions ====================*/
@@ -67,17 +67,6 @@ typedef struct {
  * @return  void
  */
 extern void LTC_Trigger(void);
-
-/**
- * @brief   makes the requests to the LTC state machine.
- *
- * This function determines how the measurement cycle is made by the LTCs, by using the adequate state requests.
- *
- * @param   LTC_Todo       what kind of task the daisy-chain should do, taken from LTC_TASK_TYPE_e
- *
- * @return  result of the state request that was made, taken from LTC_RETURN_TYPE_e
- */
-extern LTC_RETURN_TYPE_e LTC_Ctrl(LTC_TASK_TYPE_e LTC_Todo);
 
 /**
  * @brief   sets the current state request of the state variable ltc_state.
@@ -96,7 +85,7 @@ extern LTC_RETURN_TYPE_e LTC_Ctrl(LTC_TASK_TYPE_e LTC_Todo);
  *
  * @return  retVal                  current state request, taken from LTC_STATE_REQUEST_e
  */
-extern LTC_RETURN_TYPE_e LTC_SetStateRequest(LTC_STATE_REQUEST_e statereq, LTC_ADCMODE_e adcModereq, LTC_ADCMEAS_CHAN_e adcMeasChreq, uint8_t numberOfMeasuredMux);
+extern LTC_RETURN_TYPE_e LTC_SetStateRequest(LTC_STATE_REQUEST_e statereq);
 
 extern void LTC_SetFirstMeasurementCycleFinished(void);
 extern uint8_t LTC_IsFirstMeasurementCycleFinished(void);

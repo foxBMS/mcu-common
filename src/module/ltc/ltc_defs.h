@@ -88,26 +88,26 @@ typedef enum {
     LTC_STATEMACH_IDLE                      = 4,    /*!<    */
     LTC_STATEMACH_STARTMEAS                 = 5,    /*!<    */
     LTC_STATEMACH_READVOLTAGE               = 6,    /*!<    */
-    LTC_STATEMACH_STARTMUXMEASUREMENT       = 7,    /*!< Mux (Temperature and Balancing) Measurement    */
-    LTC_STATEMACH_MUXCONFIGURATION_INIT     = 8,    /*!<    */
-    LTC_STATEMACH_MUXMEASUREMENT_CONFIG     = 9,    /*!< Configuration of the multiplexers              */
-    LTC_STATEMACH_MUXMEASUREMENT            = 10,   /*!<    */
-    LTC_STATEMACH_MUXMEASUREMENT_FINISHED   = 11,   /*!<    */
+    LTC_STATEMACH_MUXMEASUREMENT            = 7,    /*!< Mux (Temperature and Balancing) Measurement    */
+    LTC_STATEMACH_MUXMEASUREMENT_FINISHED   = 12,   /*!<    */
     LTC_STATEMACH_BALANCECONTROL            = 14,   /*!<    */
     LTC_STATEMACH_ALLGPIOMEASUREMENT        = 15,   /*!<    */
     LTC_STATEMACH_READALLGPIO               = 16,   /*!<    */
     LTC_STATEMACH_READVOLTAGE_2CELLS        = 17,
     LTC_STATEMACH_STARTMEAS_2CELLS          = 18,
     LTC_STATEMACH_USER_IO_CONTROL           = 19,   /*!< Control of the user port expander              */
-    LTC_STATEMACH_EEPROM_READ_UID           = 20,   /*!< Control of the external EEPROM                 */
-    LTC_STATEMACH_TEMP_SENS_READ            = 21,   /*!< Control of the external temperature sensor     */
-    LTC_STATEMACH_BALANCEFEEDBACK           = 22,
-    LTC_STATEMACH_OPENWIRE_CHECK            = 24,
-    LTC_STATEMACH_DEVICE_PARAMETER          = 25,
-    LTC_STATEMACH_ADC_ACCURACY              = 26,
-    LTC_STATEMACH_DIGITAL_FILTER            = 27,
-    LTC_STATEMACH_VOLTMEAS_SUMOFCELLS       = 28,
-    LTC_STATEMACH_UNDEFINED                 = 29,   /*!< undefined state                                */
+    LTC_STATEMACH_USER_IO_FEEDBACK          = 20,   /*!< Control of the user port expander              */
+    LTC_STATEMACH_EEPROM_READ               = 21,   /*!< Control of the external EEPROM                 */
+    LTC_STATEMACH_EEPROM_WRITE              = 22,   /*!< Control of the external EEPROM                 */
+    LTC_STATEMACH_TEMP_SENS_READ            = 23,   /*!< Control of the external temperature sensor     */
+    LTC_STATEMACH_BALANCEFEEDBACK           = 24,
+    LTC_STATEMACH_OPENWIRE_CHECK            = 25,
+    LTC_STATEMACH_DEVICE_PARAMETER          = 26,
+    LTC_STATEMACH_ADC_ACCURACY              = 27,
+    LTC_STATEMACH_DIGITAL_FILTER            = 28,
+    LTC_STATEMACH_VOLTMEAS_SUMOFCELLS       = 29,
+    LTC_STATEMACH_EEPROM_READ_UID           = 30,   /*!< Control of the external EEPROM                 */
+    LTC_STATEMACH_UNDEFINED                 = 31,   /*!< undefined state                                */
     LTC_STATEMACH_RESERVED1                 = 0x80, /*!< reserved state                                 */
     LTC_STATEMACH_ERROR_SPIFAILED           = 0xF0, /*!< Error-State: SPI error                         */
     LTC_STATEMACH_ERROR_PECFAILED           = 0xF1, /*!< Error-State: PEC error                         */
@@ -180,10 +180,16 @@ typedef enum {
     // Init-Sequence
     LTC_CONFIG_BALANCECONTROL           = 0,    /*!<    */
     LTC_CONFIG2_BALANCECONTROL          = 1,    /*!<    */
-    LTC_REQUEST_FEEDBACK_BALANCECONTROL = 2,    /*!<    */
-    LTC_READ_FEEDBACK_BALANCECONTROL    = 3,    /*!<    */
-    LTC_SAVE_FEEDBACK_BALANCECONTROL    = 4,    /*!<    */
-    LTC_EXIT_BALANCECONTROL             = 5,    /*!<    */
+    LTC_CONFIG2_BALANCECONTROL_END      = 2,    /*!<    */
+    LTC_REQUEST_FEEDBACK_BALANCECONTROL = 3,    /*!<    */
+    LTC_READ_FEEDBACK_BALANCECONTROL    = 4,    /*!<    */
+    LTC_SAVE_FEEDBACK_BALANCECONTROL    = 5,    /*!<    */
+    LTC_EXIT_BALANCECONTROL             = 6,    /*!<    */
+    LTC_STATEMACH_STARTMUXMEASUREMENT   = 7,
+    LTC_STATEMACH_MUXCONFIGURATION_INIT = 8,    /*!<    */
+    LTC_STATEMACH_MUXMEASUREMENT_CONFIG = 9,    /*!< Configuration of the multiplexers              */
+    LTC_STATEMACH_READMUXMEASUREMENT    = 11,   /*!<    */
+    LTC_STATEMACH_STOREMUXMEASUREMENT   = 12,   /*!<    */
 } LTC_STATEMACH_BALANCECONTROL_SUB;
 
 /**
@@ -265,11 +271,15 @@ typedef enum {
     LTC_EEPROM_SET_READ_ADDRESS                                     = 0,    /*!<    */
     LTC_EEPROM_READ_DATA1                                           = 1,    /*!<    */
     LTC_EEPROM_READ_DATA2                                           = 2,    /*!<    */
-    LTC_EEPROM_READ_DATA3                                           = 3,    /*!<    */
-    LTC_EEPROM_SEND_CLOCK_STCOMM                                    = 4,    /*!<    */
-    LTC_EEPROM_READ_I2C_TRANSMISSION_RESULT_RDCOMM                  = 5,    /*!<    */
-    LTC_EEPROM_SAVE_UID                                             = 6,    /*!<    */
-    LTC_EEPROM_FINISHED                                             = 7,    /*!<    */
+    LTC_EEPROM_WRITE_DATA1                                          = 3,    /*!<    */
+    LTC_EEPROM_WRITE_DATA2                                          = 4,    /*!<    */
+    LTC_EEPROM_SEND_CLOCK_STCOMM1                                   = 5,    /*!<    */
+    LTC_EEPROM_SEND_CLOCK_STCOMM2                                   = 6,    /*!<    */
+    LTC_EEPROM_SEND_CLOCK_STCOMM3                                   = 7,    /*!<    */
+    LTC_EEPROM_SEND_CLOCK_STCOMM4                                   = 8,    /*!<    */
+    LTC_EEPROM_READ_I2C_TRANSMISSION_RESULT_RDCOMM                  = 9,    /*!<    */
+    LTC_EEPROM_SAVE_READ                                            = 10,    /*!<    */
+    LTC_EEPROM_FINISHED                                             = 11,    /*!<    */
 } LTC_STATEMACH_EEPROM_READ_UID_e;
 
 /**
@@ -279,10 +289,11 @@ typedef enum {
     LTC_TEMP_SENS_SEND_DATA1                                        = 0,    /*!<    */
     LTC_TEMP_SENS_READ_DATA1                                        = 1,    /*!<    */
     LTC_TEMP_SENS_READ_DATA3                                        = 2,    /*!<    */
-    LTC_TEMP_SENS_SEND_CLOCK_STCOMM                                 = 3,    /*!<    */
-    LTC_TEMP_SENS_READ_I2C_TRANSMISSION_RESULT_RDCOMM               = 4,    /*!<    */
-    LTC_TEMP_SENS_SAVE_TEMP                                         = 5,    /*!<    */
-    LTC_TEMP_SENS_FINISHED                                          = 6,    /*!<    */
+    LTC_TEMP_SENS_SEND_CLOCK_STCOMM1                                = 3,    /*!<    */
+    LTC_TEMP_SENS_SEND_CLOCK_STCOMM2                                = 4,    /*!<    */
+    LTC_TEMP_SENS_READ_I2C_TRANSMISSION_RESULT_RDCOMM               = 5,    /*!<    */
+    LTC_TEMP_SENS_SAVE_TEMP                                         = 6,    /*!<    */
+    LTC_TEMP_SENS_FINISHED                                          = 7,    /*!<    */
 } LTC_STATEMACH_TEMP_SENS_READ_e;
 
 /**
@@ -293,7 +304,8 @@ typedef enum {
     LTC_SET_MUX_CHANNEL_WRCOMM_MUXMEASUREMENT_CONFIG                = 0,    /*!<    */
     LTC_SEND_CLOCK_STCOMM_MUXMEASUREMENT_CONFIG                     = 1,    /*!<    */
     LTC_READ_I2C_TRANSMISSION_RESULT_RDCOMM_MUXMEASUREMENT_CONFIG   = 2,    /*!<    */
-    LTC_START_GPIO_MEASUREMENT_MUXMEASUREMENT_CONFIG                = 3,    /*!<    */
+    LTC_READ_I2C_TRANSMISSION_CHECK_MUXMEASUREMENT_CONFIG           = 3,    /*!<    */
+    LTC_START_GPIO_MEASUREMENT_MUXMEASUREMENT_CONFIG                = 4,    /*!<    */
 } LTC_STATEMACH_MUXMEASUREMENT_CONFIG_SUB_e;
 
 /**
@@ -322,6 +334,14 @@ typedef enum {
  */
 typedef enum {
     LTC_STATE_INIT_REQUEST                = LTC_STATEMACH_INITIALIZATION,           /*!<    */
+    LTC_STATE_USER_IO_WRITE_REQUEST       = LTC_STATEMACH_USER_IO_CONTROL,          /*!<    */
+    LTC_STATE_USER_IO_READ_REQUEST        = LTC_STATEMACH_USER_IO_FEEDBACK,          /*!<    */
+    LTC_STATE_USER_IO_REQUEST             = LTC_STATEMACH_USER_IO_CONTROL,          /*!<    */
+    LTC_STATE_EEPROM_READ_REQUEST         = LTC_STATEMACH_EEPROM_READ    ,          /*!<    */
+    LTC_STATE_EEPROM_WRITE_REQUEST        = LTC_STATEMACH_EEPROM_WRITE    ,          /*!<    */
+    LTC_STATE_EEPROM_READ_UID_REQUEST     = LTC_STATEMACH_EEPROM_READ    ,          /*!<    */
+    LTC_STATE_TEMP_SENS_READ_REQUEST      = LTC_STATEMACH_TEMP_SENS_READ,           /*!<    */
+    LTC_STATE_BALANCEFEEDBACK_REQUEST     = LTC_STATEMACH_BALANCEFEEDBACK,
     LTC_STATE_REINIT_REQUEST              = LTC_STATEMACH_REINIT,                   /*!<    */
     LTC_STATE_IDLE_REQUEST                = LTC_STATEMACH_IDLE,                     /*!<    */
     LTC_STATE_VOLTAGEMEASUREMENT_REQUEST  = LTC_STATEMACH_STARTMEAS,                /*!<    */
@@ -329,13 +349,10 @@ typedef enum {
     LTC_STATE_VOLTAGEMEASUREMENT_SC_REQUEST = LTC_STATEMACH_VOLTMEAS_SUMOFCELLS,    /*!<    */
     LTC_STATE_READVOLTAGE_REQUEST         = LTC_STATEMACH_READVOLTAGE,              /*!<    */
     LTC_STATE_READVOLTAGE_2CELLS_REQUEST  = LTC_STATEMACH_READVOLTAGE_2CELLS,
-    LTC_STATE_MUXMEASUREMENT_REQUEST      = LTC_STATEMACH_STARTMUXMEASUREMENT,      /*!<    */
+    LTC_STATE_MUXMEASUREMENT_REQUEST      = LTC_STATEMACH_MUXCONFIGURATION_INIT,      /*!<    */
     LTC_STATE_BALANCECONTROL_REQUEST      = LTC_STATEMACH_BALANCECONTROL,           /*!<    */
+    LTC_STATEMACH_BALANCEFEEDBACK_REQUEST = LTC_STATEMACH_BALANCEFEEDBACK,
     LTC_STATE_ALLGPIOMEASUREMENT_REQUEST  = LTC_STATEMACH_ALLGPIOMEASUREMENT,       /*!<    */
-    LTC_STATE_USER_IO_REQUEST             = LTC_STATEMACH_USER_IO_CONTROL,          /*!<    */
-    LTC_STATE_EEPROM_READ_UID_REQUEST     = LTC_STATEMACH_EEPROM_READ_UID,          /*!<    */
-    LTC_STATE_TEMP_SENS_READ_REQUEST      = LTC_STATEMACH_TEMP_SENS_READ,           /*!<    */
-    LTC_STATE_BALANCEFEEDBACK_REQUEST     = LTC_STATEMACH_BALANCEFEEDBACK,
     LTC_STATE_OPENWIRE_CHECK_REQUEST      = LTC_STATEMACH_OPENWIRE_CHECK,
     LTC_STATEMACH_DEVICE_PARAMETER_REQUEST = LTC_STATEMACH_DEVICE_PARAMETER,
     LTC_STATEMACH_ADC_ACCURACY_REQUEST    = LTC_STATEMACH_ADC_ACCURACY,
@@ -391,7 +408,7 @@ typedef struct {
     DATA_BLOCK_BALANCING_FEEDBACK_s *balancing_feedback;
     DATA_BLOCK_USER_MUX_s *user_mux;
     DATA_BLOCK_BALANCING_CONTROL_s *balancing_control;
-    DATA_BLOCK_USER_IO_CONTROL_s *user_io_control;
+    DATA_BLOCK_SLAVE_CONTROL_s *user_io_control;
     DATA_BLOCK_OPENWIRE_s *openWire_check;       // Wie genau open wire check behandeln? Was genau abspeichern?
     DATA_BLOCK_LTC_DEVICE_PARAMETER_s *deviceParameter;
     DATA_BLOCK_LTC_ADC_ACCURACY_s * adcAccuracy;
@@ -487,6 +504,8 @@ typedef struct {
     LTC_CONFIG_s ltcConfig;                 /*!< struct that holds the measurement configuration of the ltc network                          */
     uint8_t first_measurement_made;         /*!< flag that indicates if the first measurement cycle was completed                          */
     STD_RETURN_TYPE_e ltc_muxcycle_finished;/*!< flag that indictes if the measurement sequence of the multiplexers is finished                         */
+    STD_RETURN_TYPE_e check_spi_flag;       /*!< indicates if interrupt flag or timer must be considered*/
+    STD_RETURN_TYPE_e balance_control_done; /*!< indicates if balance control was done*/
 } LTC_STATE_s;
 
 /*================== Function Prototypes ==================================*/
