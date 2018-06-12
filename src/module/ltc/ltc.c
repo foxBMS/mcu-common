@@ -1,6 +1,6 @@
 /**
  *
- * @copyright &copy; 2010 - 2017, Fraunhofer-Gesellschaft zur Foerderung der angewandten Forschung e.V. All rights reserved.
+ * @copyright &copy; 2010 - 2018, Fraunhofer-Gesellschaft zur Foerderung der angewandten Forschung e.V. All rights reserved.
  *
  * BSD 3-Clause License
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -59,6 +59,8 @@
 #define LTC_FCOM_MASTER_ACK         0x00
 #define LTC_FCOM_MASTER_NACK        0x08
 #define LTC_FCOM_MASTER_NACK_STOP   0x09
+
+#define LTC_MAX_SUPPORTED_CELLS         12
 
 /**
  * Saves the last state and the last substate
@@ -288,12 +290,12 @@ static void LTC_Initialize_Database(void) {
     ltc_slave_control.eeprom_write_address_last_used = 0xFFFFFFFF;
     ltc_slave_control.eeprom_write_address_to_use = 0xFFFFFFFF;
 
-    DATA_StoreDataBlock(&ltc_cellvoltage, DATA_BLOCK_ID_CELLVOLTAGE);
-    DATA_StoreDataBlock(&ltc_celltemperature, DATA_BLOCK_ID_CELLTEMPERATURE);
-    DATA_StoreDataBlock(&ltc_minmax, DATA_BLOCK_ID_MINMAX);
-    DATA_StoreDataBlock(&ltc_balancing_feedback, DATA_BLOCK_ID_BALANCING_FEEDBACK_VALUES);
-    DATA_StoreDataBlock(&ltc_balancing_control, DATA_BLOCK_ID_BALANCING_CONTROL_VALUES);
-    DATA_StoreDataBlock(&ltc_slave_control, DATA_BLOCK_ID_SLAVE_CONTROL);
+    DB_WriteBlock(&ltc_cellvoltage, DATA_BLOCK_ID_CELLVOLTAGE);
+    DB_WriteBlock(&ltc_celltemperature, DATA_BLOCK_ID_CELLTEMPERATURE);
+    DB_WriteBlock(&ltc_minmax, DATA_BLOCK_ID_MINMAX);
+    DB_WriteBlock(&ltc_balancing_feedback, DATA_BLOCK_ID_BALANCING_FEEDBACK_VALUES);
+    DB_WriteBlock(&ltc_balancing_control, DATA_BLOCK_ID_BALANCING_CONTROL_VALUES);
+    DB_WriteBlock(&ltc_slave_control, DATA_BLOCK_ID_SLAVE_CONTROL);
 
     for (i=0; i < (8*2*BS_NR_OF_MODULES); i++) {
         ltc_user_mux.value[i] = 0;
@@ -346,7 +348,7 @@ extern void LTC_SaveVoltages(void) {
     }
     mean /= (BS_NR_OF_BAT_CELLS);
 
-    DATA_GetTable(&ltc_minmax, DATA_BLOCK_ID_MINMAX);
+    DB_ReadBlock(&ltc_minmax, DATA_BLOCK_ID_MINMAX);
     ltc_cellvoltage.state++;
     ltc_minmax.state++;
     ltc_minmax.voltage_mean = mean;
@@ -358,8 +360,8 @@ extern void LTC_SaveVoltages(void) {
     ltc_minmax.voltage_max = max;
     ltc_minmax.voltage_module_number_max = module_number_max;
     ltc_minmax.voltage_cell_number_max = cell_number_max;
-    DATA_StoreDataBlock(&ltc_cellvoltage, DATA_BLOCK_ID_CELLVOLTAGE);
-    DATA_StoreDataBlock(&ltc_minmax, DATA_BLOCK_ID_MINMAX);
+    DB_WriteBlock(&ltc_cellvoltage, DATA_BLOCK_ID_CELLVOLTAGE);
+    DB_WriteBlock(&ltc_minmax, DATA_BLOCK_ID_MINMAX);
 
 }
 
@@ -406,7 +408,7 @@ extern void LTC_SaveTemperatures(void) {
     }
     mean /= (BS_NR_OF_TEMP_SENSORS);
 
-    DATA_GetTable(&ltc_minmax, DATA_BLOCK_ID_MINMAX);
+    DB_ReadBlock(&ltc_minmax, DATA_BLOCK_ID_MINMAX);
     ltc_celltemperature.state++;
     ltc_minmax.state++;
     ltc_minmax.temperature_mean = mean;
@@ -416,8 +418,8 @@ extern void LTC_SaveTemperatures(void) {
     ltc_minmax.temperature_max = max;
     ltc_minmax.temperature_module_number_max = module_number_max;
     ltc_minmax.temperature_sensor_number_max = sensor_number_max;
-    DATA_StoreDataBlock(&ltc_celltemperature, DATA_BLOCK_ID_CELLTEMPERATURE);
-    DATA_StoreDataBlock(&ltc_minmax, DATA_BLOCK_ID_MINMAX);
+    DB_WriteBlock(&ltc_celltemperature, DATA_BLOCK_ID_CELLTEMPERATURE);
+    DB_WriteBlock(&ltc_minmax, DATA_BLOCK_ID_MINMAX);
 }
 
 /**
@@ -444,7 +446,7 @@ static void LTC_SaveBalancingFeedback(uint8_t *DataBufferSPI_RX) {
     ltc_balancing_feedback.previous_timestamp = ltc_balancing_feedback.timestamp;
     ltc_balancing_feedback.timestamp = MCU_GetTimeStamp();
     ltc_balancing_feedback.state++;
-    DATA_StoreDataBlock(&ltc_balancing_feedback, DATA_BLOCK_ID_BALANCING_FEEDBACK_VALUES);
+    DB_WriteBlock(&ltc_balancing_feedback, DATA_BLOCK_ID_BALANCING_FEEDBACK_VALUES);
 
 }
 
@@ -458,7 +460,7 @@ static void LTC_SaveBalancingFeedback(uint8_t *DataBufferSPI_RX) {
  * @return  void
  */
 static void LTC_Get_BalancingControlValues(void) {
-    DATA_GetTable(&ltc_balancing_control, DATA_BLOCK_ID_BALANCING_CONTROL_VALUES);
+    DB_ReadBlock(&ltc_balancing_control, DATA_BLOCK_ID_BALANCING_CONTROL_VALUES);
 }
 
 
@@ -2755,7 +2757,7 @@ static void LTC_SetEEPROMReadCommand(uint8_t step, uint8_t *DataBufferSPI_TX) {
     uint8_t address1 = 0;
     uint8_t address2 = 0;
 
-    DATA_GetTable(&ltc_slave_control, DATA_BLOCK_ID_SLAVE_CONTROL);
+    DB_ReadBlock(&ltc_slave_control, DATA_BLOCK_ID_SLAVE_CONTROL);
 
     address = ltc_slave_control.eeprom_read_address_to_use;
 
@@ -2806,7 +2808,7 @@ static void LTC_EEPROMSaveReadValue(uint8_t *rxBuffer) {
 
     uint16_t i = 0;
 
-    DATA_GetTable(&ltc_slave_control, DATA_BLOCK_ID_SLAVE_CONTROL);
+    DB_ReadBlock(&ltc_slave_control, DATA_BLOCK_ID_SLAVE_CONTROL);
 
     for (i=0; i < LTC_N_LTC; i++) {
         ltc_slave_control.eeprom_value_read[i] = (rxBuffer[6+i*8] << 4)|((rxBuffer[7+i*8] >> 4));
@@ -2815,7 +2817,7 @@ static void LTC_EEPROMSaveReadValue(uint8_t *rxBuffer) {
     ltc_slave_control.eeprom_read_address_last_used = ltc_slave_control.eeprom_read_address_to_use;
     ltc_slave_control.eeprom_read_address_to_use = 0xFFFFFFFF;
 
-    DATA_StoreDataBlock(&ltc_slave_control, DATA_BLOCK_ID_SLAVE_CONTROL);
+    DB_WriteBlock(&ltc_slave_control, DATA_BLOCK_ID_SLAVE_CONTROL);
 }
 
 
@@ -2867,7 +2869,7 @@ static void LTC_SetEEPROMWriteCommand(uint8_t step, uint8_t *DataBufferSPI_TX) {
     uint8_t address1 = 0;
     uint8_t address2 = 0;
 
-    DATA_GetTable(&ltc_slave_control, DATA_BLOCK_ID_SLAVE_CONTROL);
+    DB_ReadBlock(&ltc_slave_control, DATA_BLOCK_ID_SLAVE_CONTROL);
 
     address = ltc_slave_control.eeprom_write_address_to_use;
 
@@ -2907,7 +2909,7 @@ static void LTC_SetEEPROMWriteCommand(uint8_t step, uint8_t *DataBufferSPI_TX) {
         ltc_slave_control.eeprom_write_address_last_used = ltc_slave_control.eeprom_write_address_to_use;
         ltc_slave_control.eeprom_write_address_to_use = 0xFFFFFFFF;
 
-        DATA_StoreDataBlock(&ltc_slave_control, DATA_BLOCK_ID_SLAVE_CONTROL);
+        DB_WriteBlock(&ltc_slave_control, DATA_BLOCK_ID_SLAVE_CONTROL);
 
     }
 
@@ -2999,7 +3001,7 @@ static void LTC_TempSensSaveTemp(uint8_t *rxBuffer) {
     uint8_t temp_tmp[2];
     uint16_t val_i = 0;
 
-    DATA_GetTable(&ltc_slave_control, DATA_BLOCK_ID_SLAVE_CONTROL);
+    DB_ReadBlock(&ltc_slave_control, DATA_BLOCK_ID_SLAVE_CONTROL);
 
     for (i=0; i < LTC_N_LTC; i++) {
         temp_tmp[0] = (rxBuffer[6+i*8] << 4) | ((rxBuffer[7+i*8] >> 4));
@@ -3009,7 +3011,7 @@ static void LTC_TempSensSaveTemp(uint8_t *rxBuffer) {
         ltc_slave_control.external_sensor_temperature[i] = val_i;
     }
 
-    DATA_StoreDataBlock(&ltc_slave_control, DATA_BLOCK_ID_SLAVE_CONTROL);
+    DB_WriteBlock(&ltc_slave_control, DATA_BLOCK_ID_SLAVE_CONTROL);
 }
 
 /**
@@ -3029,7 +3031,7 @@ static uint8_t LTC_SetPortExpander(uint8_t *DataBufferSPI_TX, uint8_t *DataBuffe
     uint16_t i = 0;
     uint8_t output_data = 0;
 
-    DATA_GetTable(&ltc_slave_control, DATA_BLOCK_ID_SLAVE_CONTROL);
+    DB_ReadBlock(&ltc_slave_control, DATA_BLOCK_ID_SLAVE_CONTROL);
 
     for (i=0; i < BS_NR_OF_MODULES; i++) {
         output_data = ltc_slave_control.io_value_out[BS_NR_OF_MODULES-1-i];
@@ -3068,7 +3070,7 @@ static void LTC_PortExpanderSaveValues(uint8_t *rxBuffer) {
     uint16_t i = 0;
     uint8_t val_i;
 
-    DATA_GetTable(&ltc_slave_control, DATA_BLOCK_ID_SLAVE_CONTROL);
+    DB_ReadBlock(&ltc_slave_control, DATA_BLOCK_ID_SLAVE_CONTROL);
 
     /* extract data */
     for (i=0; i < LTC_N_LTC; i++) {
@@ -3076,7 +3078,7 @@ static void LTC_PortExpanderSaveValues(uint8_t *rxBuffer) {
         ltc_slave_control.io_value_in[i] = val_i;
     }
 
-    DATA_StoreDataBlock(&ltc_slave_control, DATA_BLOCK_ID_SLAVE_CONTROL);
+    DB_WriteBlock(&ltc_slave_control, DATA_BLOCK_ID_SLAVE_CONTROL);
 }
 
 /**

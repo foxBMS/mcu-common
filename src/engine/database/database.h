@@ -1,6 +1,6 @@
 /**
  *
- * @copyright &copy; 2010 - 2017, Fraunhofer-Gesellschaft zur Foerderung der angewandten Forschung e.V. All rights reserved.
+ * @copyright &copy; 2010 - 2018, Fraunhofer-Gesellschaft zur Foerderung der angewandten Forschung e.V. All rights reserved.
  *
  * BSD 3-Clause License
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -72,7 +72,7 @@ typedef struct {
  * @param   dataptrfromSender (type: void *)
  * @return  void
  */
-extern void DATA_StoreDataBlock(void *dataptrfromSender, DATA_BLOCK_ID_TYPE_e  blockID);
+extern void DB_WriteBlock(void *dataptrfromSender, DATA_BLOCK_ID_TYPE_e  blockID);
 
 /**
  * @brief   Reads a datablock in database by value
@@ -80,7 +80,7 @@ extern void DATA_StoreDataBlock(void *dataptrfromSender, DATA_BLOCK_ID_TYPE_e  b
  * @param   dataptrtoReceiver (type: void *)
  * @return  STD_RETURN_TYPE_e
  */
-extern STD_RETURN_TYPE_e DATA_GetTable(void *dataptrtoReceiver, DATA_BLOCK_ID_TYPE_e  blockID);
+extern STD_RETURN_TYPE_e DB_ReadBlock(void *dataptrtoReceiver, DATA_BLOCK_ID_TYPE_e  blockID);
 
  /**
  * @brief   Gets a pointer to datablock in database ()
