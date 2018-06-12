@@ -1,6 +1,6 @@
 /**
  *
- * @copyright &copy; 2010 - 2017, Fraunhofer-Gesellschaft zur Foerderung der angewandten Forschung e.V. All rights reserved.
+ * @copyright &copy; 2010 - 2018, Fraunhofer-Gesellschaft zur Foerderung der angewandten Forschung e.V. All rights reserved.
  *
  * BSD 3-Clause License
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -75,7 +75,7 @@ static void DATA_Init(DATA_BASE_HEADER_DEV_s* devptr);
 
 /*================== Public functions =====================================*/
 
-void DATA_StoreDataBlock(void *dataptrfromSender, DATA_BLOCK_ID_TYPE_e  blockID)
+void DB_WriteBlock(void *dataptrfromSender, DATA_BLOCK_ID_TYPE_e  blockID)
 {
     // dataptrfromSender is a pointer to data of caller function
     // dataptr_toptr_fromSender is a pointer to this pointer
@@ -192,7 +192,7 @@ void DATA_Task(void) {
 }
 
 
-STD_RETURN_TYPE_e DATA_GetTable(void *dataptrtoReceiver, DATA_BLOCK_ID_TYPE_e  blockID)
+STD_RETURN_TYPE_e DB_ReadBlock(void *dataptrtoReceiver, DATA_BLOCK_ID_TYPE_e  blockID)
 {
     DATA_QUEUE_MESSAGE_s data_send_msg;
     TickType_t queuetimeout;

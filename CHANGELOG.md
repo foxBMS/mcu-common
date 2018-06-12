@@ -1,6 +1,13 @@
 # foxBMS-common-drivers Change Log
 
-
+## Release 1.1.0
+- updated license header
+- seperated database entries to prevent concurrent read/write requests to the database
+- updated wscripts to build specific files only for primary/secondary
+- moved sdram from common repository to primary repository
+- renamed database functions to `DB_WriteBlock()` and `DB_ReadBlock()`
+- There was a compile error when CAN0 and CAN1 are deactivated
+- updated README.md
 
 ## Release 1.0.2
 

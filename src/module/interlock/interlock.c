@@ -1,6 +1,6 @@
 /**
  *
- * @copyright &copy; 2010 - 2017, Fraunhofer-Gesellschaft zur Foerderung der angewandten Forschung e.V. All rights reserved.
+ * @copyright &copy; 2010 - 2018, Fraunhofer-Gesellschaft zur Foerderung der angewandten Forschung e.V. All rights reserved.
  *
  * BSD 3-Clause License
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,6 +37,8 @@
 #include "diag.h"
 #include "cmsis_os.h"
 #include "database.h"
+#include "mcu.h"
+
 /*================== Macros and Definitions ===============================*/
 
 /**
@@ -407,16 +409,16 @@ void ILCK_Trigger(void) {
 
 
 void ILCK_CheckFeedback(void) {
-    DATA_BLOCK_SYSTEMSTATE_s systemstate_tab;
-    ILCK_ELECTRICAL_STATE_TYPE_s interlock_feedback;
-
-    DATA_GetTable(&systemstate_tab, DATA_BLOCK_ID_SYSTEMSTATE);
+    DATA_BLOCK_ILCKFEEDBACK_s ilckfeedback_tab;
+    uint8_t interlock_feedback = 0;
 
     interlock_feedback = ILCK_GetInterlockFeedback();
-    systemstate_tab.contactor_feedback &= ~(1 << 9);
-    systemstate_tab.contactor_feedback |= interlock_feedback << 9;
 
-    DATA_StoreDataBlock(&systemstate_tab, DATA_BLOCK_ID_SYSTEMSTATE);
+    ilckfeedback_tab.interlock_feedback = interlock_feedback;
+    ilckfeedback_tab.previous_timestamp = ilckfeedback_tab.timestamp;
+    ilckfeedback_tab.timestamp = MCU_GetTimeStamp();
+
+    DB_WriteBlock(&ilckfeedback_tab, DATA_BLOCK_ID_ILCKFEEDBACK);
 
     if (interlock_feedback != ILCK_GetInterlockSetValue()) {
         DIAG_Handler(DIAG_CH_INTERLOCK_FEEDBACK, DIAG_EVENT_NOK, 0, NULL_PTR);

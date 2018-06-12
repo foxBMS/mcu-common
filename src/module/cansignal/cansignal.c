@@ -1,6 +1,6 @@
 /**
  *
- * @copyright &copy; 2010 - 2017, Fraunhofer-Gesellschaft zur Foerderung der angewandten Forschung e.V. All rights reserved.
+ * @copyright &copy; 2010 - 2018, Fraunhofer-Gesellschaft zur Foerderung der angewandten Forschung e.V. All rights reserved.
  *
  * BSD 3-Clause License
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -348,14 +348,14 @@ static uint8_t CANS_CheckCanTiming(void) {
     uint8_t retVal = FALSE;
 
     uint32_t current_time;
-    DATA_BLOCK_SYSTEMSTATE_s error_flags;
+    DATA_BLOCK_ERRORSTATE_s error_flags;
     DATA_BLOCK_CURRENT_s current_tab;
 
 
     current_time = MCU_GetTimeStamp();
-    DATA_GetTable(&canstatereq_tab, DATA_BLOCK_ID_STATEREQUEST);
+    DB_ReadBlock(&canstatereq_tab, DATA_BLOCK_ID_STATEREQUEST);
 
-    DATA_GetTable(&error_flags, DATA_BLOCK_ID_SYSTEMSTATE);
+    DB_ReadBlock(&error_flags, DATA_BLOCK_ID_ERRORSTATE);
 
     // Is the BMS still getting CAN messages?
     if ((current_time-canstatereq_tab.timestamp) <= 105) {
@@ -373,7 +373,7 @@ static uint8_t CANS_CheckCanTiming(void) {
     }
 
     // check time stamps of current measurements
-    DATA_GetTable(&current_tab, DATA_BLOCK_ID_CURRENT);
+    DB_ReadBlock(&current_tab, DATA_BLOCK_ID_CURRENT);
     if (current_time-current_tab.timestamp > CANS_SENSOR_RESPONSE_TIMEOUT_MS) {
         DIAG_Handler(DIAG_CH_CURRENT_SENSOR_RESPONDING, DIAG_EVENT_NOK, 0, NULL_PTR);
     } else {
@@ -394,7 +394,7 @@ static uint8_t CANS_CheckCanTiming(void) {
             }
         }
     }
-    // DATA_StoreDataBlock(&error_flags, DATA_BLOCK_ID_ERRORFLAGS);
+    // DB_WriteBlock(&error_flags, DATA_BLOCK_ID_ERRORFLAGS);
 
     return retVal;
 }
